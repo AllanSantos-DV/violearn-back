@@ -20,12 +20,14 @@ import com.example.project.violearnback.repositories.UserRepository;
 
 import jakarta.validation.Valid;
 
+
 @RestController
 @RequestMapping("/users")
 public class UserController {
 	
 	@Autowired
 	UserRepository repository;
+	
 	
 	@PostMapping
 	public ResponseEntity<User> creteUser(@RequestBody @Valid User newUser) {
@@ -39,17 +41,22 @@ public class UserController {
 	
 	@GetMapping("/{userId}")
 	public ResponseEntity<User> getById(@PathVariable String userId) {
-		Optional<User> user = repository.findByUserId(userId);
+		User user = repository.findByUserId(userId);
 		
-		if (user.isEmpty()) {
-			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-		}
-		return new ResponseEntity<>(user.get(), HttpStatus.OK);
+//		if (user.isEmpty()) {
+//			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+//		}
+		return new ResponseEntity<>(user, HttpStatus.OK);
 	}
 	
-	@DeleteMapping("/{id}")
-	public ResponseEntity<?> deleteUser(@PathVariable Long id ){
-		Optional<User> user = repository.findById(id);
+
+
+	
+	
+	
+	@DeleteMapping("/{userId}")
+	public ResponseEntity<?> deleteUser(@PathVariable String  userId ){
+		Optional<User> user = Optional.ofNullable(repository.findByUserId(userId));
 		
 		if(user.isEmpty()) {
 			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -61,7 +68,7 @@ public class UserController {
 	
 	@PutMapping("/{userId}")
 	public ResponseEntity<User> updateUser(@PathVariable String userId, @RequestBody User updatedUser){
-		Optional<User> user = repository.findByUserId(userId);
+		Optional<User> user = Optional.ofNullable(repository.findByUserId(userId));
 		
 		if (user.isEmpty()) {
 			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
