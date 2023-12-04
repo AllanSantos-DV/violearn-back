@@ -14,7 +14,7 @@ import com.example.project.violearnback.entities.Post;
 import com.example.project.violearnback.repositories.PostRepository;
 import com.example.project.violearnback.repositories.UserRepository;
 
-@CrossOrigin
+@CrossOrigin(origins = "*", allowedHeaders = "*")
 @RestController
 @RequestMapping("/post")
 public class PostController {
