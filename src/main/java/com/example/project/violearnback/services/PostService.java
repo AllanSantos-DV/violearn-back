@@ -3,7 +3,6 @@ package com.example.project.violearnback.services;
 import com.example.project.violearnback.entities.Post;
 import com.example.project.violearnback.entities.User;
 import com.example.project.violearnback.repositories.PostRepository;
-import com.example.project.violearnback.utils.SaveFile;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -28,8 +27,11 @@ public class PostService {
         return postRepository.findAllByUserEmail(email, pageable);
     }
 
-    public void deletePost(Long postId) {
-        postRepository.deleteById(postId);
+    public boolean deletePost(User user, Long postId) {
+        return postRepository.findPostByUserAndId(user, postId).map(post -> {
+            postRepository.delete(post);
+            return true;
+        }).orElse(false);
     }
 
     @Transactional
@@ -43,7 +45,7 @@ public class PostService {
             ObjectMapper objectMapper = new ObjectMapper();
             Post post = objectMapper.readValue(postJson, Post.class);
             post.setUser(user);
-            post.setUserName(user.getName());
+            post.setUserName(user.getUserName());
             post.setPostImage(saveFileInput(image, path));
             postRepository.save(post);
             return true;

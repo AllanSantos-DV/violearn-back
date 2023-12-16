@@ -37,22 +37,6 @@ public class CifraController {
         else return ResponseEntity.badRequest().build();
     }
 
-    @DeleteMapping
-    public ResponseEntity<Object> deleteCifra(@RequestHeader(value = "Authorization") String token,
-                                              @RequestParam Long cifraId) {
-        if (userService.invalidToken(token)) return ResponseEntity.badRequest().build();
-        cifraService.deleteCifra(cifraId);
-        return ResponseEntity.ok().build();
-    }
-
-    @DeleteMapping("/user")
-    public ResponseEntity<Object> deleteAllCifraByUser(@RequestHeader(value = "Authorization") String token) {
-        if (userService.invalidToken(token)) return ResponseEntity.badRequest().build();
-        String email = jwtUtil.getEmailFromToken(token.substring(7));
-        cifraService.deleteAllCifraByUser(email);
-        return ResponseEntity.ok().build();
-    }
-
     @GetMapping("page={page}/size={size}")
     public ResponseEntity<Page<Cifras>> getAllCifra(@RequestHeader(value = "Authorization") String token,
                                                     @PathVariable int page,
@@ -70,6 +54,24 @@ public class CifraController {
         String email = jwtUtil.getEmailFromToken(token.substring(7));
         Pageable pageable = PageRequest.of(page, size);
         return ResponseEntity.ok(cifraService.findAllByUserId(email, pageable));
+    }
+
+    @DeleteMapping("/{cifraId}")
+    public ResponseEntity<Object> deleteCifra(@RequestHeader(value = "Authorization") String token,
+                                              @PathVariable Long cifraId) {
+        if (userService.invalidToken(token)) return ResponseEntity.badRequest().build();
+        String email = jwtUtil.getEmailFromToken(token.substring(7));
+        User user = userService.findByEmail(email);
+        if (cifraService.deleteCifra(user, cifraId)) return ResponseEntity.ok().build();
+        else return ResponseEntity.badRequest().build();
+    }
+
+    @DeleteMapping("/user")
+    public ResponseEntity<Object> deleteAllCifraByUser(@RequestHeader(value = "Authorization") String token) {
+        if (userService.invalidToken(token)) return ResponseEntity.badRequest().build();
+        String email = jwtUtil.getEmailFromToken(token.substring(7));
+        cifraService.deleteAllCifraByUser(email);
+        return ResponseEntity.ok().build();
     }
 
 }

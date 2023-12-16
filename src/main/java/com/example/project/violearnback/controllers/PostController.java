@@ -14,8 +14,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.List;
-
 @RestController
 @RequestMapping("/post")
 public class PostController {
@@ -40,23 +38,6 @@ public class PostController {
         else return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
     }
 
-
-    @DeleteMapping
-    public ResponseEntity<Object> deletePost(@RequestHeader(value = "Authorization") String token,
-                                             @RequestParam Long postId) {
-        if (userService.invalidToken(token)) return ResponseEntity.badRequest().build();
-        postService.deletePost(postId);
-        return ResponseEntity.ok().build();
-    }
-
-    @DeleteMapping("/user")
-    public ResponseEntity<Object> deleteAllPostByUser(@RequestHeader(value = "Authorization") String token) {
-        if (userService.invalidToken(token)) return ResponseEntity.badRequest().build();
-        String email = jwtUtil.getEmailFromToken(token.substring(7));
-        postService.deleteAllPostByUser(email);
-        return ResponseEntity.ok().build();
-    }
-
     @GetMapping("page={page}/size={size}")
     public ResponseEntity<Page<Post>> getAllPost(@RequestHeader(value = "Authorization") String token,
                                                  @PathVariable int page,
@@ -74,5 +55,23 @@ public class PostController {
         String email = jwtUtil.getEmailFromToken(token.substring(7));
         Pageable pageable = PageRequest.of(page, size);
         return ResponseEntity.ok(postService.findAllByUserId(email, pageable));
+    }
+
+    @DeleteMapping("/{postId}")
+    public ResponseEntity<Object> deletePost(@RequestHeader(value = "Authorization") String token,
+                                             @PathVariable Long postId) {
+        if (userService.invalidToken(token)) return ResponseEntity.badRequest().build();
+        String email = jwtUtil.getEmailFromToken(token.substring(7));
+        User user = userService.findByEmail(email);
+        if (postService.deletePost(user, postId)) return ResponseEntity.ok().build();
+        else return ResponseEntity.badRequest().build();
+    }
+
+    @DeleteMapping("/user")
+    public ResponseEntity<Object> deleteAllPostByUser(@RequestHeader(value = "Authorization") String token) {
+        if (userService.invalidToken(token)) return ResponseEntity.badRequest().build();
+        String email = jwtUtil.getEmailFromToken(token.substring(7));
+        postService.deleteAllPostByUser(email);
+        return ResponseEntity.ok().build();
     }
 }

@@ -1,12 +1,14 @@
 package com.example.project.violearnback.repositories;
 
 import com.example.project.violearnback.entities.Cifras;
-import com.example.project.violearnback.entities.Post;
+import com.example.project.violearnback.entities.User;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
+
+import java.util.Optional;
 
 @Repository
 public interface CifrasRepository extends JpaRepository<Cifras, Long> {
@@ -15,4 +17,6 @@ public interface CifrasRepository extends JpaRepository<Cifras, Long> {
     @NotNull Page<Cifras> findAll(@NotNull Pageable pageable);
 
     Page<Cifras> findAllByUserEmail(String email, Pageable pageable);
+
+    Optional<Cifras> findCifrasByUserAndId(User user, Long cifrasId);
 }

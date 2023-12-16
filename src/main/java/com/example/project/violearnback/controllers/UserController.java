@@ -46,40 +46,40 @@ public class UserController {
     public ResponseEntity<?> getTopFive(@RequestHeader(value = "Authorization") String token ) {
         String email = jwtUtil.getEmailFromToken(token.substring(7));
         if (userService.userExist(email)) {
-            StatusError response = new StatusError(StatusCode.EMAIL_OR_PASSWORD_INVALID);
-            return ResponseEntity.badRequest().body(response);
+            return ResponseEntity.ok(userService.findTopFive());
         }
-        return ResponseEntity.ok(userService.findTopFive());
+        StatusError response = new StatusError(StatusCode.EMAIL_OR_PASSWORD_INVALID);
+        return ResponseEntity.badRequest().body(response);
     }
 
 	@GetMapping("/perfil")
     public ResponseEntity<?> getById(@RequestHeader(value = "Authorization") String token) {
         String email = jwtUtil.getEmailFromToken(token.substring(7));
         if (userService.userExist(email)) {
-            StatusError response = new StatusError(StatusCode.EMAIL_OR_PASSWORD_INVALID);
-            return ResponseEntity.badRequest().body(response);
+            return ResponseEntity.ok(userService.findByEmail(email));
         }
-        return ResponseEntity.ok(userService.findByEmail(email));
+        StatusError response = new StatusError(StatusCode.EMAIL_OR_PASSWORD_INVALID);
+        return ResponseEntity.badRequest().body(response);
 	}
-	
-	@DeleteMapping("/delete")
+
+    @PutMapping("/update")
+    public ResponseEntity<?> updateUser(@RequestHeader(value = "Authorization") String token, @RequestBody User updatedUser) {
+        String email = jwtUtil.getEmailFromToken(token.substring(7));
+        if (userService.userExist(email)) {
+            return ResponseEntity.ok(userService.updateUser(email, updatedUser));
+        }
+        StatusError response = new StatusError(StatusCode.EMAIL_OR_PASSWORD_INVALID);
+        return ResponseEntity.badRequest().body(response);
+    }
+
+    @DeleteMapping("/delete")
     public ResponseEntity<Object> deleteUser(@RequestHeader(value = "Authorization") String token) {
         String email = jwtUtil.getEmailFromToken(token.substring(7));
         if (userService.userExist(email)) {
-            StatusError response = new StatusError(StatusCode.EMAIL_OR_PASSWORD_INVALID);
-            return ResponseEntity.badRequest().body(response);
+            userService.deleteByEmail(email);
+            return ResponseEntity.ok().build();
         }
-        userService.deleteByEmail(email);
-        return ResponseEntity.ok().build();
-	}
-	
-	@PutMapping("/update")
-    public ResponseEntity<?> updateUser(@RequestHeader(value = "Authorization") String token , @RequestBody User updatedUser) {
-        String email = jwtUtil.getEmailFromToken(token.substring(7));
-        if (userService.userExist(email)) {
-            StatusError response = new StatusError(StatusCode.EMAIL_OR_PASSWORD_INVALID);
-            return ResponseEntity.badRequest().body(response);
-        }
-        return ResponseEntity.ok(userService.updateUser(email, updatedUser));
+        StatusError response = new StatusError(StatusCode.EMAIL_OR_PASSWORD_INVALID);
+        return ResponseEntity.badRequest().body(response);
     }
 }

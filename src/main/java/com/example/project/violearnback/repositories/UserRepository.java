@@ -2,6 +2,7 @@ package com.example.project.violearnback.repositories;
 
 import com.example.project.violearnback.entities.User;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -10,7 +11,9 @@ import java.util.List;
 public interface UserRepository extends JpaRepository<User, Long> {
     User findUserByEmail(String email);
 
-    List<User> findTop5ByPostsIsNotNullAndNotesIsNotNullOrderByPostsDescNotesDesc();
+    @Query(value = "SELECT u FROM users u ORDER BY (SIZE(u.posts) + SIZE(u.notes)) DESC")
+    List<User> findTop5ByPostsAndNotes();
+
 
     void deleteByEmail(String email);
 }
