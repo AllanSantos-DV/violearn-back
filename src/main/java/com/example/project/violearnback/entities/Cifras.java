@@ -11,26 +11,26 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Entity(name="posts")
+@Entity(name = "notes")
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
-public class Post {
+public class Cifras {
 
-	@Id
+    @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long Id;
-	private String text;
-	private String userName;
-    private String postImage;
-	private int likeCount;
+    private String title;
+    private String content;
+    private String userName;
+    private String cifrasFile;
 
     @ManyToOne
     @JoinColumn(name = "user_id")
-    @JsonBackReference("user_post")
+    @JsonBackReference("user_notes")
     private User user;
 
     @Override
     public String toString() {
-    	return "Post [Id=" + Id + ", text=" + text + ", userName=" + userName + ", postImage=" + postImage
-    			+ ", likeCount=" + likeCount + "]";
+    	return "Cifras [Id=" + Id + ", title=" + title + ", content=" + content + ", userName=" + userName
+    			+ ", cifrasFile=" + cifrasFile + "]";
     }
 }
